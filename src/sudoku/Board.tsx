@@ -9,10 +9,21 @@ import {
 } from "react";
 import DigitSelector from "./DigitSelector";
 import { CellProps, CellCoordinates } from "./Cell";
+import { boxColors } from "./Box";
 
 export type BoardType = { board: BoxType[] };
 
+const BoardSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+`;
+
 const BoardContainer = styled.div`
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   display: flex;
   justify-content: flex-start;
   width: 600px;
@@ -24,23 +35,44 @@ const BoardContainer = styled.div`
   }
 `;
 
+interface ValidateButtonProps {
+  isValidating: boolean;
+}
+
+const ValidateButton = styled.button<ValidateButtonProps>`
+  display: flex;
+  text-align: center;
+  background-color: ${(props) => (props.isValidating ? "green" : "white")};
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  min-width: 10em;
+  height: 2em;
+  margin: 10px 0px;
+`;
+
 const CellFocusContext = createContext((cell: CellProps | null) => {});
 
 export function useCellFocus() {
   return useContext(CellFocusContext);
 }
 
-const Board = ({ board }: BoardType) => {
+interface BoardProps {
+  board: BoxType[];
+}
+
+const Board = ({ board }: BoardProps) => {
   const [focusedCell, setFocusedCell] = useState<CellProps | null>(null);
+  const [currentBoard, setCurrentBoard] = useState<BoxType[]>(board);
+  const [isValidating, setIsValidating] = useState<boolean>(false);
+
+  useEffect(() => {
+    setCurrentBoard(board);
+  }, [board]);
+
   const focusCell = (cell: CellProps | null) => {
     setFocusedCell(cell);
   };
-
-  const [currentBoard, setCurrentBoard] = useState<BoardType>({ board });
-
-  useEffect(() => {
-    setCurrentBoard({ board });
-  }, [board]);
 
   const getBoxIndex = ({ x, y }: CellCoordinates) => {
     return Math.floor(y / 3) * 3 + Math.floor(x / 3);
@@ -50,12 +82,24 @@ const Board = ({ board }: BoardType) => {
     if (!focusedCell) return;
 
     setCurrentBoard((boardToChange) => {
-      const updatedBoard = [...boardToChange.board];
+      const updatedBoard = [...boardToChange];
       updatedBoard[getBoxIndex(focusedCell.coordinates)].boxCells[
         (focusedCell.coordinates.x % 3) + (focusedCell.coordinates.y % 3) * 3
       ].value = newValue;
-      return { board: updatedBoard };
+      return updatedBoard;
     });
+  };
+
+  const getClearedCurrentBoard = () => {
+    const inValidatedBoard = [...currentBoard];
+
+    inValidatedBoard.forEach((box) => {
+      box.boxCells.forEach((cell) => {
+        cell.isValueValid = true;
+      });
+    });
+
+    return inValidatedBoard;
   };
 
   const validateBoard = useCallback(() => {
@@ -85,7 +129,7 @@ const Board = ({ board }: BoardType) => {
       const xCoordinatesMap: coordinatesMapType = {};
       const yCoordinatesMap: coordinatesMapType = {};
 
-      currentBoard.board.forEach((box) => {
+      currentBoard.forEach((box) => {
         box.boxCells.forEach((cell) => {
           xCoordinatesMap[cell.coordinates.x]
             ? (xCoordinatesMap[cell.coordinates.x] = [
@@ -107,7 +151,7 @@ const Board = ({ board }: BoardType) => {
 
     const invalidCells = new Array<CellCoordinates>(0);
 
-    currentBoard?.board.forEach((box) => {
+    currentBoard?.forEach((box) => {
       invalidCells.push.apply(invalidCells, findDuplicates(box.boxCells));
     });
 
@@ -121,9 +165,7 @@ const Board = ({ board }: BoardType) => {
       invalidCells.push.apply(invalidCells, findDuplicates(row));
     });
 
-    if (invalidCells.length === 0) return;
-
-    const validatedBoard = [...currentBoard.board];
+    const validatedBoard = getClearedCurrentBoard();
 
     invalidCells.forEach((invalidCell) => {
       validatedBoard[getBoxIndex(invalidCell)].boxCells[
@@ -131,30 +173,35 @@ const Board = ({ board }: BoardType) => {
       ].isValueValid = false;
     });
 
-    setCurrentBoard({ board: validatedBoard });
+    setCurrentBoard(validatedBoard);
   }, [currentBoard]);
 
   useEffect(() => {
-    validateBoard();
-  }, [focusedCell, validateBoard]);
+    isValidating ? validateBoard() : setCurrentBoard(getClearedCurrentBoard());
+  }, [focusedCell, isValidating]);
 
   return (
-    <BoardContainer onClick={validateBoard}>
-      <CellFocusContext.Provider value={focusCell}>
-        {currentBoard?.board?.map((box, index) => (
-          <Box
-            key={index}
-            cells={box.boxCells}
-            row={box.boxRow}
-            col={box.boxCol}
+    <BoardSection>
+      <ValidateButton
+        isValidating={isValidating}
+        onClick={() => {
+          setIsValidating((isValidatingPrev) => !isValidatingPrev);
+        }}
+      >
+        Validate
+      </ValidateButton>
+      <BoardContainer>
+        <CellFocusContext.Provider value={focusCell}>
+          {currentBoard?.map((box, index) => (
+            <Box key={index} cells={box.boxCells} color={boxColors[index]} />
+          ))}
+          <DigitSelector
+            focusedCell={focusedCell}
+            updateCellValue={updateBoardCellValue}
           />
-        ))}
-        <DigitSelector
-          focusedCell={focusedCell}
-          updateCellValue={updateBoardCellValue}
-        />
-      </CellFocusContext.Provider>
-    </BoardContainer>
+        </CellFocusContext.Provider>
+      </BoardContainer>
+    </BoardSection>
   );
 };
 

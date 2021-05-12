@@ -3,23 +3,29 @@ import { useCellFocus } from "./Board";
 
 interface CellContainerPorps {
   isCellValid: boolean;
+  isInitial: boolean;
 }
 
 const CellContainer = styled.div<CellContainerPorps>`
-  box-shadow: 2px 0 0 0 black, 0 2px 0 0 black, 2px 2px 0 0 black,
-    2px 0 0 0 black inset, 0 2px 0 0 black inset;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-weight: ${(props) => (props.isInitial ? "bold" : "normal")};
+  border: 1px solid;
+  border-color: white;
   display: flex;
-  background-color: ${(props) => (props.isCellValid ? "white" : "red")};
+  pointer-events: ${(props) => (props.isInitial ? "none" : "auto")};
+  color: ${(props) =>
+    props.isCellValid ? (props.isInitial ? "#5d6d7e" : "white") : "#FF4136"};
   font-size: 30px;
   height: 66px;
   align-items: center;
   justify-content: center;
-  color: #000099;
-  transition: all 0.3s;
+  transition: background-color, opacity 0.3s;
 
   :hover {
     cursor: pointer;
-    opacity: 0.3;
+    opacity: 0.5;
   }
 `;
 
@@ -31,6 +37,7 @@ export interface CellCoordinates {
 export interface CellProps {
   value: number | null;
   coordinates: CellCoordinates;
+  isInitial: boolean;
   isValueValid?: boolean;
 }
 
@@ -39,6 +46,7 @@ const Cell = (props: CellProps) => {
   return (
     <CellContainer
       isCellValid={props.isValueValid ?? true}
+      isInitial={props.isInitial}
       onClick={() => focusCell(props)}
     >
       {props.value ?? ""}

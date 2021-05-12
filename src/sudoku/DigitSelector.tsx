@@ -11,13 +11,14 @@ const DigitCell = styled.div<DigitCellProps>`
   display: flex;
   align-items: center;
   color: ${(props) =>
-    props.isSelected ? (props.isValid ? "blue" : "red") : "white"};
+    props.isSelected ? (props.isValid ? "#001f3f" : "#FF4136") : "white"};
   justify-content: center;
-  transition: all 0.3s;
+  font-size: 22px;
+  transition: all 0.2s;
   cursor: pointer;
   :hover {
-    opacity: 0.5;
-    color: white;
+    opacity: (0.8);
+    transform: scale(1.2);
   }
 `;
 
@@ -32,12 +33,13 @@ const Selector = styled.div<SelectorProps>`
   bottom: ${(props) => props.top}px;
   display: flex;
   flex-wrap: wrap;
-  height: 66px;
-  max-width: 66px;
+  height: 100px;
+  max-width: 100px;
   align-items: center;
   justify-content: center;
-  background-color: grey;
-  border: 1px solid;
+  background-color: #d0d3d4;
+  border: 2px solid;
+  border-color: white;
   > * {
     flex: 0 0 33.3333%;
   }
@@ -58,8 +60,8 @@ const DigitSelector = ({
 
   return focusedCell ? (
     <Selector
-      top={600 - 66.65 * focusedCell?.coordinates.y}
-      left={66.65 * focusedCell?.coordinates.x}
+      top={600 - 66.68 * focusedCell?.coordinates.y + 16.66}
+      left={66.68 * focusedCell?.coordinates.x - 16.66}
     >
       {sudokuDigits.map((digit, index) => {
         return (

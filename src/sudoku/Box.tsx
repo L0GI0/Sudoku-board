@@ -8,30 +8,33 @@ export type BoxType = {
   boxRow: number;
 };
 
-type BoxColors =
-  | "white"
-  | "blue"
-  | "red"
-  | "yellow"
-  | "orange"
-  | "red"
-  | "green"
-  | "purple"
-  | string;
-
 interface BoxContainerProps {
-  color: BoxColors;
+  color?: string;
 }
 
+export const boxColors = [
+  "#a569bd",
+  "#f5cba7",
+  "#f5b041",
+  "#5dade2",
+  "#f7dc6f",
+  "#48c9b0",
+  "#ec7063",
+  "#5499c7",
+  "#7fb3d5",
+];
+
 const BoxContainer = styled.div<BoxContainerProps>`
-  color: green;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   position: relative;
-  box-shadow: 4px 0 0 0 black, 0 4px 0 0 black, 4px 4px 0 0 black,
-    4px 0 0 0 black inset, 0 4px 0 0 black inset;
+  border: 2px solid;
   flex-wrap: wrap;
   display: flex;
   height: 200px;
-  background-color: ${(props) => props.color};
+  border-color: white;
+  background-color: ${(props) => props.color ?? "black"};
   width: 200px;
   > * {
     flex: 0 0 33.3333%;
@@ -40,12 +43,10 @@ const BoxContainer = styled.div<BoxContainerProps>`
 
 interface BoxProperties {
   cells: CellProps[];
-  row: number;
-  col: number;
-  color?: BoxColors;
+  color?: string;
 }
 
-const Box = ({ cells, row, col, color = "white" }: BoxProperties) => {
+const Box = ({ cells, color }: BoxProperties) => {
   return (
     <BoxContainer color={color}>
       {cells.map((cell, index) => (
@@ -54,6 +55,7 @@ const Box = ({ cells, row, col, color = "white" }: BoxProperties) => {
           key={index}
           coordinates={cell.coordinates}
           isValueValid={cell.isValueValid}
+          isInitial={cell.isInitial}
         />
       ))}
     </BoxContainer>

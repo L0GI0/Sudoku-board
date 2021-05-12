@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import Board from "./Board";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BoxType } from "./Box";
 import { generateStartingBoard } from "./boardGenerator";
 
@@ -20,7 +20,14 @@ const MenuSection = styled.div`
   padding-left: 50px;
 `;
 
-const MenuItem = css`
+export const MenuItem = css`
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  min-width: 10em;
+  height: 2em;
   margin: 10px 0px;
 `;
 
@@ -61,27 +68,38 @@ const Game = () => {
     };
   };
 
-  const parseBoard = (board: (number | null)[][]): BoxType[] => {
-    const boxes = new Array<BoxType>(0);
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        boxes[Math.floor(i / 3) * 3 + Math.floor(j / 3)]
-          ? boxes[Math.floor(i / 3) * 3 + Math.floor(j / 3)].boxCells.push({
-              value: board[i][j],
-              coordinates: { x: j, y: i },
-            })
-          : boxes.push(
-              Object({
-                boxCol: Math.floor(j / 3),
-                boxRow: Math.floor(i / 3),
-                boxCells: [{ value: board[i][j], coordinates: { x: j, y: i } }],
-              } as BoxType)
-            );
+  const parseBoard = useCallback(
+    (board: (number | null)[][]): BoxType[] => {
+      const boxes = new Array<BoxType>(0);
+      for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+          const cellValue = board[i][j];
+          boxes[Math.floor(i / 3) * 3 + Math.floor(j / 3)]
+            ? boxes[Math.floor(i / 3) * 3 + Math.floor(j / 3)].boxCells.push({
+                value: cellValue,
+                coordinates: { x: j, y: i },
+                isInitial: cellValue ? true : false,
+              })
+            : boxes.push(
+                Object({
+                  boxCol: Math.floor(j / 3),
+                  boxRow: Math.floor(i / 3),
+                  boxCells: [
+                    {
+                      value: cellValue,
+                      coordinates: { x: j, y: i },
+                      isInitial: cellValue ? true : false,
+                    },
+                  ],
+                } as BoxType)
+              );
+        }
       }
-    }
 
-    return boxes;
-  };
+      return boxes;
+    },
+    [board]
+  );
 
   return (
     <GameSection>
