@@ -16,16 +16,15 @@ const CellContainer = styled.div<CellContainerPorps>`
   display: flex;
   pointer-events: ${(props) => (props.isInitial ? "none" : "auto")};
   color: ${(props) =>
-    props.isCellValid ? (props.isInitial ? "#5d6d7e" : "white") : "#FF4136"};
+    props.isCellValid ? (props.isInitial ? "#34495e" : "white") : "#FF4136"};
   font-size: 30px;
   height: 66px;
   align-items: center;
   justify-content: center;
-  transition: background-color, opacity 0.3s;
-
+  transition: font-size 0.1s;
   :hover {
+    font-size: 35px;
     cursor: pointer;
-    opacity: 0.5;
   }
 `;
 

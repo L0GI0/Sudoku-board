@@ -10,8 +10,17 @@ import {
 import DigitSelector from "./DigitSelector";
 import { CellProps, CellCoordinates } from "./Cell";
 import { boxColors } from "./Box";
+import { ButtonIcon } from "./Game";
 
 export type BoardType = { board: BoxType[] };
+
+interface BoardProps {
+  board: BoxType[];
+}
+
+interface ValidateButtonProps {
+  isValidating: boolean;
+}
 
 const BoardSection = styled.div`
   display: flex;
@@ -35,19 +44,8 @@ const BoardContainer = styled.div`
   }
 `;
 
-interface ValidateButtonProps {
-  isValidating: boolean;
-}
-
 const ValidateButton = styled.button<ValidateButtonProps>`
-  display: flex;
-  text-align: center;
-  background-color: ${(props) => (props.isValidating ? "green" : "white")};
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  min-width: 10em;
-  height: 2em;
+  font-size: 20px;
   margin: 10px 0px;
 `;
 
@@ -57,10 +55,6 @@ export function useCellFocus() {
   return useContext(CellFocusContext);
 }
 
-interface BoardProps {
-  board: BoxType[];
-}
-
 const Board = ({ board }: BoardProps) => {
   const [focusedCell, setFocusedCell] = useState<CellProps | null>(null);
   const [currentBoard, setCurrentBoard] = useState<BoxType[]>(board);
@@ -68,7 +62,12 @@ const Board = ({ board }: BoardProps) => {
 
   useEffect(() => {
     setCurrentBoard(board);
+    focusCell(null);
   }, [board]);
+
+  useEffect(() => {
+    isValidating ? validateBoard() : setCurrentBoard(getClearedCurrentBoard());
+  }, [focusedCell, isValidating]);
 
   const focusCell = (cell: CellProps | null) => {
     setFocusedCell(cell);
@@ -176,10 +175,6 @@ const Board = ({ board }: BoardProps) => {
     setCurrentBoard(validatedBoard);
   }, [currentBoard]);
 
-  useEffect(() => {
-    isValidating ? validateBoard() : setCurrentBoard(getClearedCurrentBoard());
-  }, [focusedCell, isValidating]);
-
   return (
     <BoardSection>
       <ValidateButton
@@ -187,7 +182,14 @@ const Board = ({ board }: BoardProps) => {
         onClick={() => {
           setIsValidating((isValidatingPrev) => !isValidatingPrev);
         }}
+        className={isValidating ? "btn btn-success" : "btn btn-light"}
       >
+        <ButtonIcon
+          className={
+            isValidating ? "bi bi-check-circle-fill" : "bi bi-check-circle"
+          }
+          style={{ margin: "0px 5px" }}
+        />
         Validate
       </ValidateButton>
       <BoardContainer>

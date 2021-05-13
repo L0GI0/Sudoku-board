@@ -7,27 +7,32 @@ interface DigitCellProps {
   isValid: boolean;
 }
 
+type SelectorProps = {
+  top: number;
+  left: number;
+};
+
+interface DigitSelectorProps {
+  focusedCell: CellProps | null;
+  updateCellValue: (newValue: number) => void;
+}
+
 const DigitCell = styled.div<DigitCellProps>`
   display: flex;
   align-items: center;
   color: ${(props) =>
     props.isSelected ? (props.isValid ? "#001f3f" : "#FF4136") : "white"};
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   transition: all 0.2s;
   cursor: pointer;
   :hover {
-    opacity: (0.8);
     transform: scale(1.2);
   }
 `;
 
-type SelectorProps = {
-  top: number;
-  left: number;
-};
-
 const Selector = styled.div<SelectorProps>`
+  animation: popout 0.3s ease;
   position: relative;
   left: ${(props) => props.left}px;
   bottom: ${(props) => props.top}px;
@@ -37,18 +42,13 @@ const Selector = styled.div<SelectorProps>`
   max-width: 100px;
   align-items: center;
   justify-content: center;
-  background-color: #d0d3d4;
+  background-color: rgba(52, 58, 64, 0.5);
   border: 2px solid;
   border-color: white;
   > * {
     flex: 0 0 33.3333%;
   }
 `;
-
-interface DigitSelectorProps {
-  focusedCell: CellProps | null;
-  updateCellValue: (newValue: number) => void;
-}
 
 const DigitSelector = ({
   focusedCell,
