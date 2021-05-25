@@ -3,13 +3,18 @@ import { useState, useRef } from "react";
 import { generateRandomBoard, loadFile } from "./utils/boardBoxFormatParser";
 import Board from "./Board";
 import { BoxType } from "./Box";
+import BubbledBackground from "../bgg.png";
 
 const GameSection = styled.div`
   display: flex;
   align-items: center;
+  min-height: 900px;
   width: 100%;
   height: 100%;
   justify-content: center;
+  background: url(${BubbledBackground}) no-repeat rgba(52, 58, 64, 0.7);
+  background-size: cover;
+  background-position: center;
 `;
 
 const MenuSection = styled.div`
@@ -30,8 +35,16 @@ export const MenuItem = css`
   margin: 10px 0px;
 `;
 
-export const ButtonIcon = styled.i`
+export const ButtonIcon = css`
   margin: 0px 4px 5px 0px;
+`;
+
+const LoadFromFileIcon = styled.i.attrs({ className: "bi bi-upload" })`
+  ${ButtonIcon}
+`;
+
+const NewGameIcon = styled.i.attrs({ className: "bi bi-dice-5" })`
+  ${ButtonIcon}
 `;
 
 const LoadFileInput = styled.input.attrs({
@@ -69,7 +82,7 @@ const Game = () => {
             inputFileRef.current?.click();
           }}
         >
-          <ButtonIcon className="bi bi-upload" />
+          <LoadFromFileIcon />
           Upload
           <LoadFileInput
             onChange={(e) => {
@@ -85,7 +98,7 @@ const Game = () => {
             setBoard(generateRandomBoard);
           }}
         >
-          <ButtonIcon className="bi bi-dice-5" />
+          <NewGameIcon />
           New Game
         </NewGameButton>
       </MenuSection>

@@ -29,11 +29,10 @@ const BoxContainer = styled.div<BoxContainerProps>`
   padding: 0;
   box-sizing: border-box;
   position: relative;
-  border: 2px solid;
+  border: 1px solid;
   flex-wrap: wrap;
   display: flex;
   height: 200px;
-  border-color: white;
   background-color: ${(props) => props.color ?? "black"};
   width: 200px;
   > * {
@@ -56,6 +55,7 @@ const Box = ({ cells, color }: BoxProperties) => {
           coordinates={cell.coordinates}
           isValueValid={cell.isValueValid}
           isInitial={cell.isInitial}
+          color={color}
         />
       ))}
     </BoxContainer>

@@ -4,6 +4,7 @@ import { useCellFocus } from "./Board";
 interface CellContainerPorps {
   isCellValid: boolean;
   isInitial: boolean;
+  color?: string;
 }
 
 const CellContainer = styled.div<CellContainerPorps>`
@@ -13,6 +14,7 @@ const CellContainer = styled.div<CellContainerPorps>`
   font-weight: ${(props) => (props.isInitial ? "bold" : "normal")};
   border: 1px solid;
   border-color: white;
+  box-shadow: 0px 0px 20px 0px ${(props) => props.color};
   display: flex;
   pointer-events: ${(props) => (props.isInitial ? "none" : "auto")};
   color: ${(props) =>
@@ -38,6 +40,7 @@ export interface CellProps {
   coordinates: CellCoordinates;
   isInitial: boolean;
   isValueValid?: boolean;
+  color?: string;
 }
 
 const Cell = (props: CellProps) => {
@@ -47,6 +50,7 @@ const Cell = (props: CellProps) => {
       isCellValid={props.isValueValid ?? true}
       isInitial={props.isInitial}
       onClick={() => focusCell(props)}
+      color={props.color}
     >
       {props.value ?? ""}
     </CellContainer>
