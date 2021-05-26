@@ -10,11 +10,8 @@ import {
 import DigitSelector from "./DigitSelector";
 import { CellProps } from "./Cell";
 import { boxColors } from "./Box";
-import {
-  getBoxIndex,
-  getClearedBoard,
-  validateBoard,
-} from "./utils/boardValidator";
+import { getClearedBoard, validateBoard } from "./utils/boardValidator";
+import { getBoxIndex, updateCellValue } from "./utils/boardBoxFormatControler";
 
 interface BoardProps {
   board: BoxType[];
@@ -37,7 +34,6 @@ const BoardContainer = styled.div`
   height: 600px;
   position: relative;
   align-items: center;
-  box-shadow: inset 0px 0px 10px 1px white;
   flex-wrap: wrap;
   > * {
     flex: 0 0 33.3333%;
@@ -113,6 +109,7 @@ const Board = ({ board }: BoardProps) => {
       return { board: board, isValid: prevBoard.isValid };
     });
     focusCell(null);
+    setIsValidating(false);
   }, [board]);
 
   useEffect(() => {
@@ -134,25 +131,23 @@ const Board = ({ board }: BoardProps) => {
     if (!focusedCell) return;
 
     setCurrentBoard((boardToChange) => {
-      const updatedBoard = [...boardToChange.board];
-      updatedBoard[getBoxIndex(focusedCell.coordinates)].boxCells[
-        (focusedCell.coordinates.x % 3) + (focusedCell.coordinates.y % 3) * 3
-      ].value = newValue;
-      return { board: updatedBoard, isValid: boardToChange.isValid };
+      return {
+        board: updateCellValue(boardToChange.board, focusedCell, newValue),
+        isValid: boardToChange.isValid,
+      };
     });
   };
 
   const validateCurrentBoard = useCallback(() => {
-    const { validatedBoard, invalidCells, allMissingValues } = validateBoard(
+    const { validatedBoard, invalidCells, numOfMissingValues } = validateBoard(
       currentBoard.board
     );
-    console.log(`All missing values = ${allMissingValues}`);
     const isBoardValid = invalidCells.length === 0 ? true : false;
 
     setCurrentBoard({
       board: validatedBoard,
       isValid: isBoardValid,
-      missingValues: allMissingValues,
+      missingValues: numOfMissingValues,
     });
   }, [currentBoard]);
 

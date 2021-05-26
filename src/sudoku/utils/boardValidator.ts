@@ -1,16 +1,17 @@
 import { BoxType } from "../Box";
 import { CellProps, CellCoordinates } from "../Cell";
+import { getBoxIndex } from "./boardBoxFormatControler";
 
 export const validateBoard = (board: BoxType[]) => {
-  const invalidCells = new Array<CellCoordinates>(0);
+  let invalidCells = new Array<CellCoordinates>(0);
 
-  let allMissingValues = 0;
+  let numOfMissingValues = 0;
 
   board?.forEach((box) => {
     const { duplicates: boxDuplicates, missingValues } = findDuplicates(
       box.boxCells
     );
-    allMissingValues += missingValues;
+    numOfMissingValues += missingValues;
     invalidCells.push.apply(invalidCells, boxDuplicates);
   });
 
@@ -18,7 +19,7 @@ export const validateBoard = (board: BoxType[]) => {
 
   Object.values(xCoordinatesMap).forEach((row) => {
     const { duplicates: rowDuplicates } = findDuplicates(row);
-    invalidCells.push.apply(rowDuplicates);
+    invalidCells.push.apply(invalidCells, rowDuplicates);
   });
 
   Object.values(yCoordinatesMap).forEach((col) => {
@@ -28,13 +29,17 @@ export const validateBoard = (board: BoxType[]) => {
 
   const validatedBoard = getClearedBoard(board);
 
+  invalidCells = [...new Set(invalidCells)];
+
   invalidCells.forEach((invalidCell) => {
     validatedBoard[getBoxIndex(invalidCell)].boxCells[
       (invalidCell.x % 3) + (invalidCell.y % 3) * 3
     ].isValueValid = false;
   });
 
-  return { validatedBoard, invalidCells, allMissingValues };
+  console.log(`Invalid cells = ${JSON.stringify(invalidCells)}`);
+
+  return { validatedBoard, invalidCells, numOfMissingValues };
 };
 
 export const createCoordinatesMaps = (board: BoxType[]) => {
@@ -85,10 +90,6 @@ export const findDuplicates = (cells: CellProps[]) => {
     }
   }
   return { duplicates, missingValues };
-};
-
-export const getBoxIndex = ({ x, y }: CellCoordinates) => {
-  return Math.floor(y / 3) * 3 + Math.floor(x / 3);
 };
 
 export const getClearedBoard = (board: BoxType[]) => {

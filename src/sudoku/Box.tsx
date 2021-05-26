@@ -8,10 +8,6 @@ export type BoxType = {
   boxRow: number;
 };
 
-interface BoxContainerProps {
-  color?: string;
-}
-
 export const boxColors = [
   "#a569bd",
   "#f5cba7",
@@ -19,12 +15,12 @@ export const boxColors = [
   "#5dade2",
   "#f7dc6f",
   "#48c9b0",
-  "#ec7063",
-  "#5499c7",
+  "#FFC0CB",
+  "#90EE90",
   "#7fb3d5",
 ];
 
-const BoxContainer = styled.div<BoxContainerProps>`
+const BoxContainer = styled.div`
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -33,7 +29,7 @@ const BoxContainer = styled.div<BoxContainerProps>`
   flex-wrap: wrap;
   display: flex;
   height: 200px;
-  background-color: ${(props) => props.color ?? "black"};
+  border-color: #34495e;
   width: 200px;
   > * {
     flex: 0 0 33.3333%;
@@ -47,7 +43,7 @@ interface BoxProperties {
 
 const Box = ({ cells, color }: BoxProperties) => {
   return (
-    <BoxContainer color={color}>
+    <BoxContainer>
       {cells.map((cell, index) => (
         <Cell
           value={cell.value}

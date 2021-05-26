@@ -1,9 +1,9 @@
 import styled, { css } from "styled-components";
 import { useState, useRef } from "react";
-import { generateRandomBoard, loadFile } from "./utils/boardBoxFormatParser";
+import { generateRandomBoard, loadFile } from "./utils/boardBoxFormatControler";
 import Board from "./Board";
 import { BoxType } from "./Box";
-import BubbledBackground from "../bgg.png";
+import BubbledBackground from "../common/images/bgg.png";
 
 const GameSection = styled.div`
   display: flex;

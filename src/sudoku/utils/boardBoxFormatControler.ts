@@ -1,5 +1,6 @@
 import { BoxType } from "../Box";
 import { generateStartingBoard } from "./boardGenerator";
+import { CellCoordinates, CellProps } from "../Cell";
 
 export const parseBoard = (board: (number | null)[][]): BoxType[] => {
   const boxes = new Array<BoxType>(0);
@@ -54,4 +55,22 @@ export const loadFile = async (e: any): Promise<BoxType[]> => {
 
 export const generateRandomBoard = () => {
   return parseBoard(generate2DBoard());
+};
+
+export const updateCellValue = (
+  boardToUpdate: BoxType[],
+  cellToUpdate: CellProps,
+  newValue: number
+) => {
+  const updatedBoard = [...boardToUpdate];
+
+  updatedBoard[getBoxIndex(cellToUpdate.coordinates)].boxCells[
+    (cellToUpdate.coordinates.x % 3) + (cellToUpdate.coordinates.y % 3) * 3
+  ].value = newValue;
+
+  return updatedBoard;
+};
+
+export const getBoxIndex = ({ x, y }: CellCoordinates) => {
+  return Math.floor(y / 3) * 3 + Math.floor(x / 3);
 };
